@@ -37,6 +37,13 @@ export default function UserForm({ formData, setFormData, handleSubmit, isEditin
 
     const handleSubmitForm = (e) => {
         e.preventDefault();
+
+        
+        if (!formData.company.name) {
+            alert("Please enter the department.");
+            return;
+        }
+
         const fullName = `${formData.firstname} ${formData.lastname}`;
         const updatedFormData = { ...formData, name: fullName };
 
@@ -90,6 +97,7 @@ export default function UserForm({ formData, setFormData, handleSubmit, isEditin
                         placeholder="Department"
                         value={formData.company.name}
                         onChange={(e) => setFormData({ ...formData, company: { ...formData.company, name: e.target.value } })}
+                        required
                         className="border-2 border-gray-600 bg-black text-white p-3 rounded-md w-full focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
                     />
                     <button type="submit" className="bg-gradient-to-r from-green-500 to-green-600 text-white p-3 rounded-md hover:bg-green-700 focus:outline-none transition-all duration-300">
