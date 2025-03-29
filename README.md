@@ -1,14 +1,1 @@
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-
-
-this is a usermanagement page using jsonplaceholder where user will show after running and we can add user and edit the existing user and delete that also 
-
-to run- npm run dev
+it is a usermanagement site made by react and tailwind where user signup and login after that after successful login that users will show and user can add a new user and edit the perticular user and delete that and search also 
