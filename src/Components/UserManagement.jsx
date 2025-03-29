@@ -8,6 +8,7 @@ const API_URL = "https://reqres.in/api/users";
 export default function UserManagement({ onLogout }) {
   const [users, setUsers] = useState([]);
   const [toggle, setToggle] = useState(false);
+  const [searchTerm, setSearchTerm] = useState(""); 
   const [formData, setFormData] = useState({
     id: null,
     firstname: "",
@@ -16,7 +17,6 @@ export default function UserManagement({ onLogout }) {
   });
   const [isEditing, setIsEditing] = useState(false);
 
-  
   useEffect(() => {
     axios
       .get(API_URL)
@@ -24,7 +24,6 @@ export default function UserManagement({ onLogout }) {
       .catch(() => alert("Error fetching users"));
   }, []);
 
-  
   const handleDelete = (id) => {
     axios
       .delete(`${API_URL}/${id}`)
@@ -32,10 +31,8 @@ export default function UserManagement({ onLogout }) {
       .catch(() => alert("Error deleting user"));
   };
 
-  
   const handleSubmit = (data) => {
     if (isEditing) {
-      
       axios
         .put(`${API_URL}/${data.id}`, {
           first_name: data.firstname,
@@ -55,7 +52,6 @@ export default function UserManagement({ onLogout }) {
         })
         .catch(() => alert("Error updating user"));
     } else {
-     
       axios
         .post(API_URL, {
           first_name: data.firstname,
@@ -75,16 +71,14 @@ export default function UserManagement({ onLogout }) {
         .catch(() => alert("Error adding user"));
     }
 
-    
     setFormData({
       id: null,
       firstname: "",
       lastname: "",
       email: "",
     });
-    setToggle(false); 
+    setToggle(false);
   };
-
 
   const handleEdit = (user) => {
     setFormData({
@@ -93,9 +87,16 @@ export default function UserManagement({ onLogout }) {
       lastname: user.last_name,
       email: user.email,
     });
-    setToggle(true); 
+    setToggle(true);
     setIsEditing(true);
   };
+
+  
+  const filteredUsers = users.filter((user) =>
+    `${user.first_name} ${user.last_name} ${user.email}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,17 +113,28 @@ export default function UserManagement({ onLogout }) {
       </nav>
 
       <div className="p-6">
+        {/* Search Input */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded"
+          />
+        </div>
+
         <UserForm
           formData={formData}
           setFormData={setFormData}
-          handleSubmit={handleSubmit} 
+          handleSubmit={handleSubmit}
           isEditing={isEditing}
           togg={toggle}
           setTogg={setToggle}
         />
         <UserTable
-          users={users}
-          handleEdit={handleEdit} 
+          users={filteredUsers}
+          handleEdit={handleEdit}
           handleDelete={handleDelete}
         />
       </div>
