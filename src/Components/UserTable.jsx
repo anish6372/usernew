@@ -17,12 +17,10 @@ export default function UserTable({ users, handleEdit, handleDelete }) {
     <div className="p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {currentUsers.map((user) => {
-          const [firstname, lastname] = user.name
-            ? user.name.split(" ")
-            : ["", ""];
+          const { first_name: firstname, last_name: lastname, email, id } = user;
 
           return (
-            <div key={user.id} className="bg-gray-800 shadow-lg rounded-lg p-6 text-white border border-gray-700">
+            <div key={id} className="bg-gray-800 shadow-lg rounded-lg p-6 text-white border border-gray-700">
               <div className="w-24 h-24 bg-gray-600 rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto">
                 {firstname?.[0] || ""}{lastname?.[0] || ""}
               </div>
@@ -38,16 +36,15 @@ export default function UserTable({ users, handleEdit, handleDelete }) {
                     <p>{lastname || "N/A"}</p>
                   </div>
                 </div>
-                <p className="text-sm mt-2"><strong>ID:</strong> {user.id}</p>
-                <p className="text-sm"><strong>Email:</strong> {user.email}</p>
-                <p className="text-sm"><strong>Department:</strong> {user.company?.name || "N/A"}</p>
+                <p className="text-sm mt-2"><strong>ID:</strong> {id}</p>
+                <p className="text-sm"><strong>Email:</strong> {email}</p>
               </div>
 
               <div className="flex justify-center gap-4 mt-4">
                 <button onClick={() => handleEdit(user)} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">
                   ✏ Edit
                 </button>
-                <button onClick={() => handleDelete(user.id)} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
+                <button onClick={() => handleDelete(id)} className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600">
                   🗑 Delete
                 </button>
               </div>

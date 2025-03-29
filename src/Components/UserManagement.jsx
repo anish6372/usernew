@@ -3,9 +3,9 @@ import axios from "axios";
 import UserTable from "./UserTable";
 import UserForm from "./UserForm";
 
-const API_URL = "https://jsonplaceholder.typicode.com/users";
+const API_URL = "https://reqres.in/api/users";
 
-export default function UserManagement() {
+export default function UserManagement({ onLogout }) {
   const [users, setUsers] = useState([]);
   const [toggle, setToggle] = useState(false);
   const [formData, setFormData] = useState({
@@ -13,17 +13,18 @@ export default function UserManagement() {
     firstname: "",
     lastname: "",
     email: "",
-    company: { name: "" },
   });
   const [isEditing, setIsEditing] = useState(false);
 
+  
   useEffect(() => {
     axios
       .get(API_URL)
-      .then((response) => setUsers(response.data))
+      .then((response) => setUsers(response.data.data)) 
       .catch(() => alert("Error fetching users"));
   }, []);
 
+  
   const handleDelete = (id) => {
     axios
       .delete(`${API_URL}/${id}`)
@@ -31,90 +32,97 @@ export default function UserManagement() {
       .catch(() => alert("Error deleting user"));
   };
 
-  const handleSubmit = (formData) => {
+  
+  const handleSubmit = (data) => {
     if (isEditing) {
-      const updatedUser = {
-        id: formData.id,
-        firstname: formData.firstname,
-        lastname: formData.lastname,
-        email: formData.email,
-        company: formData.company,
-        name: `${formData.firstname} ${formData.lastname}`,
-      };
+      
+      axios
+        .put(`${API_URL}/${data.id}`, {
+          first_name: data.firstname,
+          last_name: data.lastname,
+          email: data.email,
+        })
+        .then((response) => {
+          const updatedUser = {
+            id: data.id,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            email: response.data.email,
+          };
 
-      setUsers(
-        users.map((user) => (user.id === formData.id ? updatedUser : user))
-      );
-
-      setIsEditing(false);
-      setFormData({
-        id: null,
-        firstname: "",
-        lastname: "",
-        email: "",
-        company: { name: "" },
-      });
+          setUsers(users.map((user) => (user.id === data.id ? updatedUser : user)));
+          setIsEditing(false);
+        })
+        .catch(() => alert("Error updating user"));
     } else {
-      const newUser = {
-        firstname: formData.firstname,
-        lastname: formData.lastname,
-        email: formData.email,
-        company: formData.company,
-        name: `${formData.firstname} ${formData.lastname}`,
-      };
+     
+      axios
+        .post(API_URL, {
+          first_name: data.firstname,
+          last_name: data.lastname,
+          email: data.email,
+        })
+        .then((response) => {
+          const newUser = {
+            id: response.data.id,
+            first_name: response.data.first_name,
+            last_name: response.data.last_name,
+            email: response.data.email,
+          };
 
-      const newUserWithId = { ...newUser, id: users.length + 1 };
-
-      setUsers([...users, newUserWithId]);
-
-      setFormData({
-        id: null,
-        firstname: "",
-        lastname: "",
-        email: "",
-        company: { name: "" },
-      });
+          setUsers([...users, newUser]);
+        })
+        .catch(() => alert("Error adding user"));
     }
+
+    
+    setFormData({
+      id: null,
+      firstname: "",
+      lastname: "",
+      email: "",
+    });
+    setToggle(false); 
   };
+
 
   const handleEdit = (user) => {
     setFormData({
       id: user.id,
-      firstname: user.name.split(" ")[0],
-      lastname: user.name.split(" ")[1] || "",
+      firstname: user.first_name,
+      lastname: user.last_name,
       email: user.email,
-      company: { name: user.company.name },
     });
-    setToggle(!toggle);
+    setToggle(true); 
     setIsEditing(true);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      
       <nav className="bg-blue-600 p-4 shadow-md">
         <div className="flex items-center justify-between max-w-screen-xl mx-auto text-white">
           <h1 className="text-xl font-semibold">User Management</h1>
-          <div className="space-x-6">
-            <a href="#users" className="hover:text-gray-200 transition-all">Users</a>
-            
-          </div>
+          <button
+            onClick={onLogout}
+            className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition-all"
+          >
+            Logout
+          </button>
         </div>
       </nav>
 
       <div className="p-6">
-        
         <UserForm
           formData={formData}
           setFormData={setFormData}
-          handleSubmit={handleSubmit}
+          handleSubmit={handleSubmit} 
           isEditing={isEditing}
           togg={toggle}
           setTogg={setToggle}
         />
         <UserTable
           users={users}
-          handleEdit={handleEdit}
+          handleEdit={handleEdit} 
           handleDelete={handleDelete}
         />
       </div>
